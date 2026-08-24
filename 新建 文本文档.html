@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问卷</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:#000000;
+  color:#ffffff;
+  font-family:system-ui, sans-serif;
+  max-width:620px;
+  margin:80px auto;
+  padding:0 20px;
+  line-height:1.9;
+  font-size:18px;
+}
+.score-panel{
+  position:fixed;
+  top:12px;
+  right:16px;
+  color:#888;
+  font-size:15px;
+}
+.page{
+  display:none;
+}
+.page.active{
+  display:block;
+}
+.q-title{
+  margin-bottom:32px;
+}
+.option-wrap{
+  visibility:hidden;
+}
+.option{
+  width:100%;
+  background:#111111;
+  color:#fff;
+  border:1px solid #333;
+  padding:14px 18px;
+  margin:10px 0;
+  border-radius:8px;
+  text-align:left;
+  font-size:17px;
+  cursor:pointer;
+}
+.option:hover{
+  background:#222222;
+}
+.input-name{
+  width:100%;
+  background:#111;
+  color:#fff;
+  border:1px solid #444;
+  padding:14px;
+  border-radius:8px;
+  font-size:17px;
+  margin:20px 0;
+}
+.btn-normal{
+  background:#111;
+  color:#fff;
+  border:1px solid #333;
+  padding:12px 22px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:17px;
+}
+.btn-normal:hover{
+  background:#222;
+}
+.type-text{
+  white-space:pre-wrap;
+}
+.hidden-delay{
+  visibility:hidden;
+}
+</style>
+</head>
+<body>
+<div class="score-panel">当前分数：<span id="scoreShow">0</span></div>
+
+<div class="page" data-id="locked">
+  <div class="q-title" id="lockedText"></div>
+</div>
+
+<!-- 开场打字机片段 -->
+<div class="page" data-id="intro0">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="nextIntro()">你好</button>
+</div>
+
+<div class="page" data-id="intro1">
+  <div class="q-title type-text"></div>
+  <input class="input-name" id="usernameInput" placeholder="请输入你的名字">
+  <button class="btn-normal" onclick="saveNameAndNext()">确定</button>
+</div>
+
+<div class="page" data-id="intro2">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="nextIntro()">好的</button>
+</div>
+
+<div class="page" data-id="intro3">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="nextIntro()">继续</button>
+</div>
+
+<!-- ==========计分题目区域========== -->
+<div class="page" data-id="q0">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+    <button class="option" onclick="goNext(0)">偶尔</button>
+  </div>
+</div>
+
+<div class="page" data-id="q1">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+    <button class="option" onclick="goNext(0)">偶尔</button>
+  </div>
+</div>
+
+<div class="page" data-id="q2">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(-5)">是的</button>
+    <button class="option" onclick="goNext(5)">不是</button>
+    <button class="option" onclick="goNext(0)">偶尔</button>
+  </div>
+</div>
+
+<div class="page" data-id="q3">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+    <button class="option" onclick="goNext(5)">偶尔</button>
+  </div>
+</div>
+
+<div class="page" data-id="q4">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(0)">不是</button>
+  </div>
+</div>
+
+<div class="page" data-id="q5">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+  </div>
+</div>
+
+<div class="page" data-id="q6">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goSpecial(5,'trans0')">是的</button>
+    <button class="option" onclick="goSpecial(-5,'trans1')">不是</button>
+  </div>
+</div>
+
+<div class="page" data-id="q7">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+  </div>
+</div>
+
+<div class="page" data-id="q8">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+    <button class="option" onclick="goNext(5)">不确定</button>
+  </div>
+</div>
+
+<div class="page" data-id="q9">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goSpecial(5,'trans2')">是的</button>
+    <button class="option" onclick="goSpecial(0,'trans3')">不是</button>
+  </div>
+</div>
+
+<div class="page" data-id="q10">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goSpecial(5,'trans4')">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+    <button class="option" onclick="goNext(0)">看情况</button>
+  </div>
+</div>
+
+<div class="page" data-id="q11">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(-5)">寻找合理的解释</button>
+    <button class="option" onclick="goNext(5)">感到好奇，想弄清楚</button>
+    <button class="option" onclick="goNext(0)">感到害怕，想避开</button>
+  </div>
+</div>
+
+<div class="page" data-id="q12">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(0)">是的</button>
+    <button class="option" onclick="goNext(5)">不是</button>
+    <button class="option" onclick="goNext(-5)">不确定</button>
+  </div>
+</div>
+
+<div class="page" data-id="q13">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(-5)">是的</button>
+    <button class="option" onclick="goNext(5)">不是</button>
+    <button class="option" onclick="goNext(0)">不确定</button>
+  </div>
+</div>
+
+<div class="page" data-id="q14">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">试图证明他是存在的</button>
+    <button class="option" onclick="goNext(-5)">接受自己记错了</button>
+    <button class="option" onclick="goNext(0)">我不知道</button>
+  </div>
+</div>
+
+<div class="page" data-id="q15">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(0)">某个视频作者</button>
+    <button class="option" onclick="goNext(-5)">我没想过这个问题</button>
+    <button class="option" onclick="goNext(5)">某个不该存在的东西</button>
+  </div>
+</div>
+
+<div class="page" data-id="q16">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(0)">不是</button>
+    <button class="option" onclick="goNext(-5)">不好说</button>
+  </div>
+</div>
+
+<div class="page" data-id="q17">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">会</button>
+    <button class="option" onclick="goNext(-5)">不会</button>
+    <button class="option" onclick="goNext(0)">我不知道</button>
+  </div>
+</div>
+
+<div class="page" data-id="q18">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(5)">是的</button>
+    <button class="option" onclick="goNext(-5)">不是</button>
+    <button class="option" onclick="goNext(0)">中规中矩</button>
+  </div>
+</div>
+
+<div class="page" data-id="q19">
+  <div class="q-title type-text"></div>
+  <div class="option-wrap">
+    <button class="option" onclick="goNext(0)">是的</button>
+    <button class="option" onclick="goNext(5)">不是</button>
+  </div>
+</div>
+
+<!-- 自定义过渡页面 -->
+<div class="page" data-id="trans0">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="resumeMain()">继续</button>
+</div>
+<div class="page" data-id="trans1">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="resumeMain()">继续</button>
+</div>
+<div class="page" data-id="trans2">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="resumeMain()">继续</button>
+</div>
+<div class="page" data-id="trans3">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="resumeMain()">继续</button>
+</div>
+<div class="page" data-id="trans4">
+  <div class="q-title type-text"></div>
+  <button class="option" onclick="resumeMain()">继续</button>
+</div>
+
+<!-- 结局页面 -->
+<div class="page" data-id="endA">
+  <div class="q-title">感谢您的配合！</div>
+  <p class="hidden-delay" id="delayTextA"></p>
+</div>
+<div class="page" data-id="endB">
+  <div class="q-title">感谢您的配合！</div>
+  <p class="hidden-delay" id="delayTextB"></p>
+</div>
+
+<script>
+// 配置
+const totalQuestion = 20;
+const scoreThreshold = 80;
+const typeSpeed = 45;
+//开场文本
+const introTexts = [
+  "你好。很高兴能见到你。",
+  "我能够得到你的名字吗？",
+  "好的 我明白了。\n接下来我会给你一些问题。",
+  "请保持诚实、放松的状态。\n请注意：选过的选项无法再次选择，请谨慎选择题目内容"
+];
+//题目题干列表
+const questionTexts = [
+  "你喜欢沉浸在过去的时光里",
+  "你经常通过某种手段来回忆以往的时光，并有一定依赖性",
+  "你喜欢现在自己所拥有的一切，并一直保持不错的心情",
+  "你无法忘记/原谅某些曾经的事情",
+  "你感觉目前很放松，很安全",
+  "你有没有和身边的人出现过某种集体错误记忆？",
+  "你是通过某个视频找到这个问卷的吗",
+  "这个名字是你原本的名字吗？",
+  "你是否经历过某些自己明明清晰记得，别人却完全不记得的事情？",
+  "你在这个问卷里说谎了。",
+  "你宁愿和过去的回忆待在一起，也不愿面对现在的人？",
+  "当你看到一件无法解释的事情时，你的第一反应是？",
+  "你是否相信某些东西是“不应该被看见”的？",
+  "你觉得自己对自己的记忆有完全的掌控权吗？",
+  "如果有一天你发现，你记忆中的某个人并不存在，你会怎么做？",
+  "你认为这份问卷是谁做的？",
+  "你有什么不被人知晓的恐惧吗？",
+  "如果有一个地方能让你回到过去，你必须完全地 留在那里 除此以外没有别的副作用。你会考虑吗？",
+  "你接触电子设备的时长多吗？",
+  "你有过害怕某日自己突然消失在这个世界上的时候吗？"
+];
+//过渡页文本
+const transTexts = {
+  trans0: ":) 听到这个消息真令人欣喜，{{name}}",
+  trans1: "真想知道你是怎么找到这里的。",
+  trans2: "…… 这样的诚实也不错 不是吗？",
+  trans3: ":)",
+  trans4: ":) 我们或许可以成为新的朋友"
+};
+
+let score = 0;
+let currentQ = 0;
+let userName = "";
+let introIndex = 0;
+let typeTimer = null;
+
+//本地存储
+const isFinished = localStorage.getItem("quizFinished");
+const lastScore = Number(localStorage.getItem("lastScore")) || 0;
+const lockedTextDom = document.getElementById("lockedText");
+const scoreDom = document.getElementById("scoreShow");
+
+function updateScoreUi(){
+  scoreDom.innerText = score;
+}
+
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelector(`.page[data-id="${id}"]`).classList.add("active");
+}
+
+//打字机
+async function typeWrite(elem, rawText){
+  clearInterval(typeTimer);
+  elem.textContent = "";
+  let text = rawText.replaceAll("{{name}}",userName);
+  let i=0;
+  return new Promise(res=>{
+    typeTimer = setInterval(()=>{
+      if(i<text.length){
+        elem.textContent += text[i];
+        i++;
+      }else{
+        clearInterval(typeTimer);
+        res();
+      }
+    },typeSpeed);
+  })
+}
+
+//加载题目页面，打字输出题干，打完显示选项
+async function loadQuestion(qIndex){
+  const pageId = "q"+qIndex;
+  showPage(pageId);
+  const pageDom = document.querySelector(`[data-id="${pageId}"]`);
+  const titleDom = pageDom.querySelector(".type-text");
+  const wrapDom = pageDom.querySelector(".option-wrap");
+  wrapDom.style.visibility = "hidden";
+  await typeWrite(titleDom, questionTexts[qIndex]);
+  wrapDom.style.visibility = "visible";
+}
+
+//锁定页面逻辑：根据上次分数显示不同文案
+if(isFinished === "1"){
+  showPage("locked");
+  if(lastScore >= scoreThreshold){
+    lockedTextDom.innerText = "不必担心，我们很快就会见面的";
+  }else{
+    lockedTextDom.innerText = "你不适合这里。";
+  }
+}else{
+  showPage("intro0");
+  typeWrite(document.querySelector('[data-id="intro0"] .type-text'),introTexts[0]);
+}
+
+function nextIntro(){
+  introIndex++;
+  if(introIndex>=4){
+    loadQuestion(0);
+    return;
+  }
+  const pageId = "intro"+introIndex;
+  showPage(pageId);
+  typeWrite(document.querySelector(`[data-id="${pageId}"] .type-text`), introTexts[introIndex]);
+}
+
+function saveNameAndNext(){
+  const inputDom = document.getElementById("usernameInput");
+  userName = inputDom.value.trim() || "匿名者";
+  localStorage.setItem("quizName",userName);
+  nextIntro();
+}
+
+//普通下一题
+function goNext(points){
+  score += points;
+  updateScoreUi();
+  const next = currentQ+1;
+  if(next >= totalQuestion){
+    finishQuiz();
+    return;
+  }
+  currentQ = next;
+  loadQuestion(currentQ);
+}
+
+//跳转过渡页
+async function goSpecial(points, transId){
+  score += points;
+  updateScoreUi();
+  showPage(transId);
+  const dom = document.querySelector(`[data-id="${transId}"] .type-text`);
+  await typeWrite(dom, transTexts[transId]);
+}
+
+//过渡页结束回到题目
+function resumeMain(){
+  const next = currentQ+1;
+  if(next >= totalQuestion){
+    finishQuiz();
+    return;
+  }
+  currentQ = next;
+  loadQuestion(currentQ);
+}
+
+//结束，保存本次分数与完成标记
+function finishQuiz(){
+  localStorage.setItem("quizFinished","1");
+  localStorage.setItem("lastScore", String(score));
+  const delayMs = 10000;
+  if(score >= scoreThreshold){
+    showPage("endA");
+    setTimeout(()=>{
+      const el = document.getElementById("delayTextA");
+      el.textContent = `${userName}\n希望能快点见到你。`;
+      el.style.visibility = "visible";
+    },delayMs);
+  }else{
+    showPage("endB");
+    setTimeout(()=>{
+      const el = document.getElementById("delayTextB");
+      el.textContent = "祝您生活愉快！";
+      el.style.visibility = "visible";
+    },delayMs);
+  }
+}
+</script>
+</body>
+</html>
