@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Memoria 问卷</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:#000;
+  color:#fff;
+  font-family:monospace,"Consolas",monospace;
+  min-height:100vh;
+  padding:2rem;
+  line-height:1.8;
+  overflow-x:hidden;
+}
+.page{
+  max-width:720px;
+  margin:0 auto;
+  display:none;
+}
+.page.active{display:block;}
+.typing-text{white-space:pre-wrap;}
+.fade-box{opacity:0;transition:opacity 0.8s ease;}
+.fade-box.show{opacity:1;}
+.btn,.opt{
+  display:block;
+  background:transparent;
+  color:#fff;
+  border:1px solid #fff;
+  padding:0.7rem 1rem;
+  margin:0.6rem 0;
+  font-family:inherit;
+  font-size:1rem;
+  cursor:pointer;
+  text-align:left;
+}
+.btn:hover,.opt:hover{background:#222;}
+input[type="text"]{
+  background:#111;
+  color:#fff;
+  border:1px solid #fff;
+  padding:0.6rem;
+  width:100%;
+  margin:1rem 0;
+  font-family:inherit;
+  font-size:1rem;
+}
+.note-bottom-right{
+  position:fixed;
+  right:2rem;
+  bottom:2rem;
+  font-size:0.8rem;
+  opacity:0;
+  transition:opacity 0.4s;
+  color:#ffffff;
+}
+.note-bottom-right.show{opacity:1;}
+.hidden-copy-text{
+  color:#000;
+  background:#000;
+}
+.eye‑diamond-wrap{
+  position:relative;
+  width:110px;
+  height:110px;
+  margin:0 auto 24px;
+}
+.eye‑diamond{
+  width:110px;
+  height:110px;
+  background:#ffffff;
+  transform:rotate(45deg);
+  transition:opacity 0.6s ease;
+}
+.eye‑ball{
+  width:22px;
+  height:22px;
+  border‑radius:50%;
+  background:#000000;
+  border:none;
+  position:absolute;
+  top:44px;
+  left:44px;
+  transition:opacity 0.6s ease;
+}
+
+.diamond-ball-wrap{
+  position:relative;
+  display:inline-block;
+  width:38px;
+  height:22px;
+  vertical-align:middle;
+  margin-left:8px;
+  opacity:0;
+  transition:opacity 0.5s ease;
+}
+.diamond-solid{
+  width:18px;
+  height:18px;
+  background:#fff;
+  transform:rotate(45deg);
+  position:absolute;
+  left:4px;
+  top:2px;
+}
+.ball{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#000;
+  border:none;
+  position:absolute;
+  top:5px;
+  left:15px;
+}
+.end-title{
+  text-align:center;
+  font-size:2.2rem;
+  margin:3rem 0 2rem;
+}
+.flash-red{
+  animation:flashRed 1s;
+}
+@keyframes flashRed{
+  0%{background:#000;}
+  50%{background:#300;}
+  100%{background:#000;}
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+.shake{
+  animation: shake 0.4s ease;
+}
+.tip-hint{
+  color:#ff7777;
+  margin-top:0.4rem;
+}
+.optLine{
+  opacity:0;
+  transition:opacity 0.6s ease;
+}
+.optLine.show{opacity:1;}
+#skillTip{
+  color:#ffaaaa;
+  margin:0.4rem 0;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="page" data-id="p0">
+    <div class="typing-text"></div>
+    <div class="fade-box">
+      <button class="btn next-page">好的</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="p1">
+    <div class="typing-text"></div>
+    <input type="text" id="usernameInput" placeholder="请输入你的称呼">
+    <div class="tip-hint" id="p1Tip"></div>
+    <div class="fade-box">
+      <button class="btn next-page">确认</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="p2">
+    <div class="typing-text"></div>
+    <div class="fade-box delay3s">
+      <button class="btn next-page">好的</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q1">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 是的</button>
+      <button class="opt" data-score="-5">B 不是</button>
+      <button class="opt" data-score="0">C 偶尔</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q2">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 是的</button>
+      <button class="opt" data-score="-5">B 不是</button>
+      <button class="opt" data-score="0">C 偶尔</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q3">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="-5">A 是的</button>
+      <button class="opt" data-score="+5">B 不是</button>
+      <button class="opt" data-score="0">C 偶尔</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q4">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 是的</button>
+      <button class="opt" data-score="-5">B 不是</button>
+      <button class="opt" data-score="+5">C 偶尔</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q5">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt goto" data-score="+5" data-target="wallQ">A 是的</button>
+      <button class="opt goto" data-score="-5" data-target="wallQ">B 不是</button>
+      <button class="opt goto" data-score="0" data-target="wallQ">C 一般</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="wallQ">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt goto" data-target="wallYes">▶是</button>
+      <button class="opt goto" data-target="wallNo">▶否</button>
+    </div>
+  </div>
+  <div class="page" data-id="wallYes">
+    <div class="typing-text"></div>
+    <div class="fade-box">
+      <button class="btn fixed-next" data-goto="q6">确定</button>
+    </div>
+  </div>
+  <div class="page" data-id="wallNo">
+    <div class="typing-text"></div>
+    <div class="fade-box">
+      <button class="btn fixed-next" data-goto="q6">确定</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q6">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 是的</button>
+      <button class="opt" data-score="-5">B 不是</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q7">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt goto" data-score="+5" data-target="q7a">A 是的</button>
+      <button class="opt goto" data-score="-5" data-target="q7b">B 不是</button>
+    </div>
+  </div>
+  <div class="page" data-id="q7a">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="q8">继续</button></div>
+  </div>
+  <div class="page" data-id="q7b">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="q8">继续</button></div>
+  </div>
+
+  <div class="page" data-id="q8">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt goto" data-score="+5" data-target="q8NotePage">A 是的</button>
+      <button class="opt goto" data-score="-5" data-target="q9">B 不是</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q8NotePage">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="q9">继续</button></div>
+  </div>
+
+  <div class="page" data-id="q9">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 是的</button>
+      <button class="opt" data-score="-5">B 不是</button>
+      <button class="opt" data-score="+5">C 不确定</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q10">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt goto" data-score="+5" data-target="q10a">A 是的</button>
+      <button class="opt goto" data-score="0" data-target="q10b">B 不是</button>
+    </div>
+  </div>
+  <div class="page" data-id="q10a">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="animPage">继续</button></div>
+  </div>
+  <div class="page" data-id="q10b">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="animPage">继续</button></div>
+  </div>
+
+  <div class="page" data-id="animPage">
+    <div class="eye‑diamond-wrap">
+      <div class="eye‑diamond" id="animDiamond"></div>
+      <div class="eye‑ball" id="animEyeBall"></div>
+    </div>
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt goto flashTrig" data-target="flashYes">▶是的</button>
+      <button class="opt goto" data-target="flashNo">▶不是</button>
+    </div>
+  </div>
+  <div class="page" data-id="flashYes">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="q11">继续</button></div>
+  </div>
+  <div class="page" data-id="flashNo">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="q11">继续</button></div>
+  </div>
+
+  <div class="page" data-id="q11">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt goto" data-score="+5" data-target="q11a">A 是的</button>
+      <button class="opt" data-score="-5">B 不是</button>
+      <button class="opt" data-score="0">C 看情况</button>
+    </div>
+  </div>
+  <div class="page" data-id="q11a">
+    <div class="typing-text"></div>
+    <div class="fade-box"><button class="btn fixed-next" data-goto="q12">继续</button></div>
+  </div>
+
+  <div class="page" data-id="q12">
+    <div class="typing-text"></div>
+    <div class="optWrap">
+      <div class="optLine">
+        <button class="opt" data-score="-5">A 寻找合理的解释</button>
+        <span class="diamond-ball-wrap">
+          <span class="diamond-solid"></span>
+          <span class="ball"></span>
+        </span>
+      </div>
+      <div class="optLine">
+        <button class="opt" data-score="+5">B 感到好奇，想弄清楚</button>
+        <span class="diamond-ball-wrap">
+          <span class="diamond-solid"></span>
+          <span class="ball"></span>
+        </span>
+      </div>
+      <div class="optLine">
+        <button class="opt" data-score="0">C 感到害怕，想避开</button>
+        <span class="diamond-ball-wrap">
+          <span class="diamond-solid"></span>
+          <span class="ball"></span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" data-id="q13">
+    <div class="typing-text"></div>
+    <span class="hidden-copy-text">4‑2</span>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="0">A 是的</button>
+      <button class="opt" data-score="+5">B 不是</button>
+      <button class="opt" data-score="-5">C 不确定</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q14">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="-5">A 是的</button>
+      <button class="opt" data-score="+5">B 不是</button>
+      <button class="opt" data-score="0">C 不确定</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q15">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 试图证明他是存在的</button>
+      <button class="opt" data-score="-5">B 接受自己记错了</button>
+      <button class="opt" data-score="0">C 我不知道</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="skillInput">
+    <div class="typing-text"></div>
+    <input type="text" id="skillInputEl">
+    <div id="skillTip"></div>
+    <div class="fade-box"><button class="btn next-page">确定</button></div>
+  </div>
+
+  <div class="page" data-id="q16">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="0">A 某个视频作者</button>
+      <button class="opt" data-score="-5">B 我没想过这个问题</button>
+      <button class="opt" data-score="+5">C 某个不该存在的东西</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q17">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 是的</button>
+      <button class="opt" data-score="0">B 不是</button>
+      <button class="opt" data-score="-5">C 不好说</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q18">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 会</button>
+      <button class="opt" data-score="-5">B 不会</button>
+      <button class="opt" data-score="0">C 我不知道</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q19">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="+5">A 是的</button>
+      <button class="opt" data-score="-5">B 不是</button>
+      <button class="opt" data-score="0">C 中规中矩</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="q20">
+    <div class="typing-text"></div>
+    <div class="fade-box optWrap">
+      <button class="opt" data-score="0">A 是的</button>
+      <button class="opt" data-score="+5">B 不是</button>
+    </div>
+  </div>
+
+  <div class="page" data-id="normalEnd">
+    <div class="typing-text"></div>
+    <div class="note-bottom-right" id="endNote"></div>
+  </div>
+
+  <div class="page" data-id="endingHigh">
+    <div class="typing-text"></div>
+    <input type="text" id="memoriaInput">
+    <div class="fade-box">
+      <button class="btn" id="memoriaSubmit">提交</button>
+    </div>
+  </div>
+  <div class="page" data-id="endingLow">
+    <div class="typing-text"></div>
+  </div>
+
+  <div class="page" data-id="betPage">
+    <div class="typing-text"></div>
+    <div class="fade-box">
+      <div class="typing‑append"></div>
+    </div>
+  </div>
+
+  <div class="page" data-id="visitedPage">
+    <div class="typing-text"></div>
+    <div class="fade-box">
+      <button class="btn" id="gotoEndBranch">进入结局</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const pageTexts={
+  p0:{text:"您好!能够遇见您一定是我们之间存在某种独特的吸引力\n"},
+  p1:{text:"在开始问卷之前，我能否知道该如何称呼您？\n"},
+  p2:{text:"在开始之前如果您能够诚实地‑放松地‑回答这份问卷我会很高兴的。\n当然 我不得不提醒您，\n这份问卷在做出选择后就不能再返回上一题，请务必不要做出令自己后悔的选择，请务必看清问卷题目，您能够明白吗？\n",delayBtn:3000},
+  q1:{text:"问题1：\n你喜欢沉浸在过去的时光里\n"},
+  q2:{text:"问题2：\n你经常通过某种手段来回忆以往的时光，并有一定依赖性\n"},
+  q3:{text:"问题3：\n你喜欢现在自己所拥有的一切，并一直保持不错的心情\n"},
+  q4:{text:"问题4：\n你无法忘记/原谅某些曾经的事情\n"},
+  q5:{text:"问题5：\n你感觉目前很放松，很安全\n"},
+  wallQ:{text:"另外，我想询问您…请别急着回头\n此时您的后背是否紧贴着墙壁？\n"},
+  wallYes:{text:"真好，真好，请继续吧!\n"},
+  wallNo:{text:"请小心那些您无法直接观测的地方\n"},
+  q6:{text:"问题6：\n你有没有和身边的人出现过某种集体错误记忆？\n"},
+  q7:{text:"问题7：\n你是通过某个视频找到这个问卷的吗\n"},
+  q7a:{text:":)\n听到这个消息真令人欣喜，{{username}}，您是个聪明而又敏锐的人…\n"},
+  q7b:{text:"真想知道你是怎么找到这里的呢。\n"},
+  q8:{text:"问题8：\n{{username}}这个名字是你现实中使用的真名吗？\n"},
+  q8NotePage:{text:"希望您没有在录屏。\n暴露您的个人信息似乎并不明智呢。\n"},
+  q9:{text:"问题9：\n你是否经历过某些自己明明清晰记得，别人却表示完全没有印象的事情？\n"},
+  q10:{text:"问题10：\n你在这个问卷里说谎了。\n"},
+  q10a:{text:"这样的诚实也不错，偶尔的谎言是有效果的\n"},
+  q10b:{text:":)\n"},
+  animPage:{text:"你会对…\n例如被注视这样的事情让你不安吗？\n"},
+  flashYes:{text:"不用感到不安，在这里你是完全安全的!\n"},
+  flashNo:{text:"这很好。\n"},
+  q11:{text:"问题11：\n你宁愿和过去的回忆待在一起，也不愿面对现在的人？\n"},
+  q11a:{text:":) 如果你能多花点时间在我身上的话或许我们能够成为相当要好的朋友{{username}}\n"},
+  q12:{text:"问题12：\n当你看到一件无法解释的事情时，你的第一反应是？\n"},
+  q13:{text:"问题13：\n你是否相信某些东西是“不应该被看见”的？\n"},
+  q14:{text:"问题14：\n你觉得你对自己的记忆有完全的掌控权吗？\n"},
+  q15:{text:"问题15：\n如果有一天你发现，你记忆中的某个人并不存在，你会怎么做？\n"},
+  skillInput:{text:"你有什么特长吗{{username}}？\n"},
+  q16:{text:"问题16：\n你认为这份问卷是谁做的？\n"},
+  q17:{text:"问题17：\n你有什么不被人知晓的恐惧吗？\n"},
+  q18:{text:"问题18：\n如果有一个地方能让你回到过去，但你必须完全地留在那里，除此以外没有别的副作用。你会考虑吗？\n"},
+  q19:{text:"问题19：\n你接触电子设备的时长多吗？\n"},
+  q20:{text:"问题20：\n你有过害怕某日自己突然消失在这个世界上的时候吗？\n"},
+  normalEnd:{text:"感谢您的配合！祝您生活愉快！\n"},
+  endingHigh:{text:"{{username}}…我们还会再见面的……\n"},
+  endingLow:{text:"你不适合这里。\n"},
+  visitedPage:{text:"你已经完成过这份问卷。\n"},
+  betPage:{text:"{{username}}，你很聪明，也很有想法…我很中意你，想必你看过那个视频了 对吧？不如我们来打个赌吧？\n"}
+};
+
+let state={
+  currentPageId:"p0",
+  username:"",
+  skill:"",
+  score:0,
+  typingSpeed:45,
+  fastTypingSpeed:8
+};
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+
+async function typeWrite(el,rawText,speed=state.typingSpeed){
+  el.textContent="";
+  let text=rawText.replace(/{{username}}/g,state.username);
+  for(let i=0;i<text.length;i++){
+    el.textContent+=text[i];
+    await sleep(speed);
+  }
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function goPage(pageId){
+  $$(".page").forEach(p=>p.classList.remove("active"));
+  const page=$(`.page[data-id="${pageId}"]`);
+  if(!page)return;
+  state.currentPageId=pageId;
+  page.classList.add("active");
+  const textEl=page.querySelector(".typing-text");
+  const cfg=pageTexts[pageId];
+  if(cfg&&textEl){
+    await typeWrite(textEl,cfg.text);
+    if(cfg.delayBtn){
+      await sleep(cfg.delayBtn);
+    }
+    const allFade=page.querySelectorAll(".fade-box");
+    for(const dom of allFade){
+      dom.classList.add("show");
+      await sleep(220);
+    }
+  }
+
+  if(pageId==="animPage"){
+    await runAnimPageEyeBall();
+  }
+  if(pageId==="q12"){
+    await runQ12Animation();
+  }
+  if(pageId==="normalEnd"){
+    await handleNormalEndPage();
+  }
+  if(pageId==="betPage"){
+    await sleep(3000);
+    const appendEl=page.querySelector(".typing‑append");
+    appendEl.textContent="\n不如就来赌…在那孩子的第七个视频前——在她那些自己尝试脱逃的那些小手段里 找到我藏的信息吧？\n如果你能在第七个视频之前找到信息，并发到那个账号的私信中，就算你赢了";
+    appendEl.parentElement.classList.add("show");
+  }
+}
+
+async function runAnimPageEyeBall(){
+  const diamond=$("#animDiamond");
+  const ball=$("#animEyeBall");
+  diamond.style.opacity="1";
+  ball.style.opacity="1";
+  ball.style.transition="left 0.5s ease";
+
+  await sleep(300);
+  ball.style.left="20px";
+  await sleep(500);
+  ball.style.left="74px";
+  await sleep(500);
+  ball.style.left="20px";
+  await sleep(500);
+  ball.style.left="74px";
+  await sleep(500);
+
+  diamond.style.opacity="0";
+  ball.style.opacity="0";
+}
+
+async function runQ12Animation(){
+  const lines=$$(".optLine");
+  for(const line of lines){
+    line.classList.add("show");
+    const wrap=line.querySelector(".diamond-ball-wrap");
+    const ball=line.querySelector(".ball");
+    wrap.style.opacity="1";
+    ball.style.transition="left 0.65s ease";
+
+    ball.style.left="4px";
+    await sleep(650);
+    ball.style.left="24px";
+    await sleep(650);
+
+    wrap.style.opacity="0";
+    await sleep(350);
+  }
+}
+
+async function handleNormalEndPage(){
+  localStorage.setItem("memoria_visited","1");
+  localStorage.setItem("memoria_score",String(state.score));
+  localStorage.setItem("memoria_username",state.username);
+
+  const noteDom=$("#endNote");
+  noteDom.textContent="";
+  noteDom.classList.remove("show");
+  await sleep(5000);
+  if(state.score>=80){
+    noteDom.textContent=`${state.username}，希望能快点见到你。`;
+  }
+  noteDom.classList.add("show");
+}
+
+async function routeVisitedBranch(){
+  const savedScoreRaw = localStorage.getItem("memoria_score");
+  const savedName = localStorage.getItem("memoria_username") || "";
+  const savedScore = parseInt(savedScoreRaw,10);
+
+  state.username = savedName;
+  if(isNaN(savedScore)){
+    await goPage("visitedPage");
+    return;
+  }
+  state.score = savedScore;
+  if(state.score>=80){
+    await goPage("endingHigh");
+  }else{
+    await goPage("endingLow");
+  }
+}
+
+async function routeEnding(){
+  await goPage("normalEnd");
+}
+
+function bindEvents(){
+  document.addEventListener("click",async e=>{
+    if(e.target.matches(".fixed-next")){
+      const targetId=e.target.dataset.goto;
+      await goPage(targetId);
+      return;
+    }
+
+    if(e.target.matches(".next-page")){
+      if(state.currentPageId==="p1"){
+        const inputEl=$("#usernameInput");
+        const tipEl=$("#p1Tip");
+        const btn=e.target;
+        const val=inputEl.value.trim();
+        if(!val){
+          btn.classList.add("shake");
+          tipEl.textContent="您的名字是？";
+          setTimeout(()=>btn.classList.remove("shake"),400);
+          return;
+        }
+        state.username=val;
+        tipEl.textContent="";
+      }
+
+      if(state.currentPageId==="skillInput"){
+        const skillTip=$("#skillTip");
+        const val=$("#skillInputEl").value.trim();
+        if(!val){
+          skillTip.textContent="真可惜 您不愿意告诉我吗？还是您尚未认可您那些优势？";
+          skillTip.style.color="#ffaaaa";
+          return;
+        }
+        state.skill=val;
+        skillTip.textContent="";
+      }
+
+      const next=getNextId(state.currentPageId);
+      if(next==="ending"){
+        await routeEnding();
+      }else{
+        await goPage(next);
+      }
+    }
+
+    if(e.target.matches(".opt")){
+      const scoreStr=e.target.dataset.score;
+      if(scoreStr!==undefined){
+        const num=Number(scoreStr);
+        if(!isNaN(num)) state.score+=num;
+      }
+
+      if(e.target.matches(".flashTrig")){
+        document.body.classList.add("flash-red");
+        setTimeout(()=>document.body.classList.remove("flash-red"),1000);
+      }
+
+      const target=e.target.dataset.target;
+      if(target){
+        await goPage(target);
+      }else{
+        const next=getNextId(state.currentPageId);
+        if(next==="ending"){
+          await routeEnding();
+        }else{
+          await goPage(next);
+        }
+      }
+    }
+
+    if(e.target.id==="gotoEndBranch"){
+      await routeVisitedBranch();
+    }
+
+    if(e.target.id==="memoriaSubmit"){
+      const val=$("#memoriaInput").value.trim().toLowerCase();
+      if(val==="memoria"){
+        await goPage("betPage");
+      }
+    }
+  });
+}
+
+const pageOrder=[
+  "p0","p1","p2","q1","q2","q3","q4","q5","wallQ","q6","q7","q8","q8NotePage","q9","q10","animPage","q11","q12","q13","q14","q15","skillInput","q16","q17","q18","q19","q20","ending"
+];
+function getNextId(cur){
+  const idx=pageOrder.indexOf(cur);
+  if(idx===-1||idx+1>=pageOrder.length) return "ending";
+  return pageOrder[idx+1];
+}
+
+(async function init(){
+  bindEvents();
+  const hasVisited=localStorage.getItem("memoria_visited")==="1";
+  if(hasVisited){
+    await routeVisitedBranch();
+    return;
+  }
+  await goPage("p0");
+})();
+</script>
+</body>
+</html>
